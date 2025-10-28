@@ -37,19 +37,21 @@ public class Tree {
         if (root == null) {
             return false;
         }
-        root = removeRecursive(root, key);
-        return true;
+        boolean[] found = {false};
+        root = removeRecursive(root, key, found);
+        return found[0];
     }
 
-    private Node removeRecursive(Node current, char key) {
+    private Node removeRecursive(Node current, char key, boolean[] found) {
         if (current == null) {
             return null;
         }
         if (key < current.getKey()) {
-            current.setLeft(removeRecursive(current.getLeft(), key));
+            current.setLeft(removeRecursive(current.getLeft(), key, found));
         } else if (key > current.getKey()) {
-            current.setRight(removeRecursive(current.getRight(), key));
+            current.setRight(removeRecursive(current.getRight(), key, found));
         } else {
+            found[0] = true;
             if (current.getLeft() == null && current.getRight() == null) {
                 return null;
             } else if (current.getLeft() == null) {
@@ -58,8 +60,10 @@ public class Tree {
                 return current.getLeft();
             } else {
                 char smallestValue = findSmallestValue(current.getRight());
-                current = new Node(smallestValue);
-                current.setRight(removeRecursive(current.getRight(), smallestValue));
+                Node newNode = new Node(smallestValue);
+                newNode.setLeft(current.getLeft());
+                newNode.setRight(removeRecursive(current.getRight(), smallestValue, new boolean[]{false}));
+                return newNode;
             }
         }
         return current;
@@ -137,11 +141,11 @@ public class Tree {
             System.out.println(prefix + (isTail ? "└── " : "├── ") + node.getKey() + label);
             if (node.getLeft() != null || node.getRight() != null) {
                 String newPrefix = prefix + (isTail ? "    " : "│   ");
-                if (node.getLeft() != null) {
-                    printTreeRecursive(node.getLeft(), newPrefix, node.getRight() == null, "(Left)");
-                }
                 if (node.getRight() != null) {
-                    printTreeRecursive(node.getRight(), newPrefix, true, "(Right)");
+                    printTreeRecursive(node.getRight(), newPrefix, node.getLeft() == null, "(Right)");
+                }
+                if (node.getLeft() != null) {
+                    printTreeRecursive(node.getLeft(), newPrefix, true, "(Left)");
                 }
              }
         }

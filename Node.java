@@ -15,6 +15,9 @@ public class Node {
     public void setLeft(Node left) {
         this.left = left;
     }
+    public void setKey(char key) {
+        this.key = key;
+    }
     public Node getRight() {
         return this.right;
     }
